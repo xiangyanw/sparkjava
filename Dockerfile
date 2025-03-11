@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
 
-FROM --platform=$BUILDPLATFORM maven:3.8.5-eclipse-temurin-17 AS build
+FROM --platform=$BUILDPLATFORM public.ecr.aws/docker/library/maven:3.8.5-eclipse-temurin-17 AS build
 WORKDIR /workdir/server
 COPY pom.xml /workdir/server/pom.xml
 RUN mvn dependency:go-offline
@@ -21,10 +21,10 @@ groupadd docker
 usermod -aG docker vscode
 EOF
 # install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
+# COPY --from=gloursdocker/docker / /
 CMD ["java", "-jar", "target/app.jar" ]
 
-FROM eclipse-temurin:17-jre-focal
+FROM public.ecr.aws/docker/library/eclipse-temurin:17-jre-focal
 ARG DEPENDENCY=/workdir/server/target
 EXPOSE 8080
 COPY --from=build ${DEPENDENCY}/app.jar /app.jar
